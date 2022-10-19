@@ -1,5 +1,16 @@
-dist/
+# dependencies
 node_modules/
 
-.env.private
-.env.database
+# IDE
+/.idea
+/.vscode
+
+#compiled scipts
+dist/
+
+# bundle
+packages/**/*.d.ts
+packages/**/*.js
+
+# environment variables
+.env.*
