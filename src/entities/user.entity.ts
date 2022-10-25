@@ -5,25 +5,25 @@ import { PlatformEntity } from "./platform.entity";
 
 @Entity()
 export class UserEntity extends CommonEntity {
-	@Column()
+	@Column({ unique: true })
 	email: string;
 
 	@Column()
 	password: string;
 
-	@Column()
-	gender: string;
+	@Column({ nullable: true })
+	gender: string | null;
 
-	@Column("float")
-	height: number;
+	@Column({ type: "float", nullable: true })
+	height: number | null;
 
-	@Column("float")
-	weight: number;
+	@Column({ type: "float", nullable: true })
+	weight: number | null;
 
-	@Column()
-	phone: string;
+	@Column({ nullable: true })
+	phone: string | null;
 
-	@Column()
+	@Column({ type: "boolean" })
 	consentMarketing: boolean;
 
 	// below are relations
