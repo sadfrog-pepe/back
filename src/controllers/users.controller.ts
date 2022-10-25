@@ -6,25 +6,42 @@ import {
 	Req,
 	Response as Res,
 } from "@nestjs/common";
-import { JoinRequestDto } from "../dto/join.request.dto";
+import { CreateUserApiDto } from "src/dto/create.user.api.dto";
+import { LoginUserApiDto } from "src/dto/login.user.api.dto";
+import { UserGenderType } from "src/entities/user-column-types/user-column-type";
 import { UsersService } from "../services/users.service";
 
 @Controller("api/users")
 export class UsersController {
 	constructor(private usersService: UsersService) {}
 
-	@Get()
-	async getUsers(@Req() req) {
-		// return req.user;
-		// res.locals.jwt
+	@Post("create")
+	createUser(@Body() data: CreateUserApiDto): Promise<number> {
+		const {
+			email,
+			password,
+			gender,
+			height,
+			weight,
+			phone,
+			consentMarketing,
+		} = data;
+
+		return this.usersService.createUser(
+			email,
+			password,
+			this.formatUserGenderType(gender) || null,
+			height == "" ? Number(height) : null,
+			weight == "" ? Number(weight) : null,
+			phone == "" ? phone : null,
+			consentMarketing == "true" ? true : false
+		);
 	}
 
-	@Post()
-	postUsers(@Body() data: JoinRequestDto) {}
-
 	@Post("login")
-	login(@Req() req) {
-		return req.user;
+	login(@Body() data: LoginUserApiDto): Promise<number> {
+		const { email, password } = data;
+		return this.usersService.readUserAccount(email, password);
 	}
 
 	@Post("logout")
@@ -32,5 +49,16 @@ export class UsersController {
 		req.logout();
 		res.clearCookies("connect.id", { httpOnly: true });
 		res.send("ok");
+	}
+
+	formatUserGenderType(gender: string): UserGenderType {
+		switch (gender) {
+			case "male":
+				return UserGenderType.MALE;
+			case "female":
+				return UserGenderType.FEMALE;
+			default:
+				return null;
+		}
 	}
 }
