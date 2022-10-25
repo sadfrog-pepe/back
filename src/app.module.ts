@@ -5,7 +5,7 @@ import path from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LoggerMiddleware } from "./middlewares/logger.middleware";
-import { UsersModule } from "./modules/users.module";
+import { UsersModule } from "./modules/user.module";
 
 @Module({
 	imports: [

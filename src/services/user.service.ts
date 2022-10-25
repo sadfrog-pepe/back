@@ -1,7 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CreateUserApiDto } from "src/dto/create.user.api.dto";
-import { LoginUserApiDto } from "src/dto/login.user.api.dto";
 import { UserGenderType } from "src/entities/user-column-types/user-column-type";
 import { UserEntity } from "src/entities/user.entity";
 import { UserPlatformBridgeRepository } from "src/repositories/oauth.repository";
@@ -47,5 +45,9 @@ export class UsersService {
 		return (
 			await this.userRepository.findOneByEmailAndPassword(email, password)
 		).id;
+	}
+
+	async readUserEmail(email: string): Promise<UserEntity> {
+		return await this.userRepository.findOneByEmail(email);
 	}
 }

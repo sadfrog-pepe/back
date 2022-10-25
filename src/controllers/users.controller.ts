@@ -9,7 +9,7 @@ import {
 import { CreateUserApiDto } from "src/dto/create.user.api.dto";
 import { LoginUserApiDto } from "src/dto/login.user.api.dto";
 import { UserGenderType } from "src/entities/user-column-types/user-column-type";
-import { UsersService } from "../services/users.service";
+import { UsersService } from "../services/user.service";
 
 @Controller("api/users")
 export class UsersController {

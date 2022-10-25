@@ -15,4 +15,11 @@ export class UserRepository extends Repository<UserEntity> {
 			return user;
 		});
 	}
+	async findOneByEmail(email: string): Promise<UserEntity> {
+		return this.findOneBy({
+			email: email,
+		}).then((user) => {
+			return user;
+		});
+	}
 }
