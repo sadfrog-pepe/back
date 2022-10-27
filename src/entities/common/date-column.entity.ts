@@ -1,8 +1,10 @@
-import { Entity, DeleteDateColumn } from "typeorm";
-import { CreatedUpdatedDateColumnEntity } from "./created-updated-date-column.entity";
+import { DeleteDateColumn, UpdateDateColumn } from "typeorm";
+import { CreatedDateColumnEntity } from "./created-date-column.entity";
 
-@Entity()
-export class DateColumnEntity extends CreatedUpdatedDateColumnEntity {
+export class DateColumnEntity extends CreatedDateColumnEntity {
+	@UpdateDateColumn()
+	updatedAt: Date;
+
 	@DeleteDateColumn()
 	deletedAt: Date;
 }
