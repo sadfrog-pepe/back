@@ -1,9 +1,12 @@
-export class CreateUserApiDto {
-	public email: string;
-	public password: string;
-	public gender: string;
-	public height: string;
-	public weight: string;
-	public phone: string;
-	public consentMarketing: string;
-}
+import { PickType } from "@nestjs/swagger";
+import { UserEntity } from "src/entities/user.entity";
+
+export class CreateUserApiDto extends PickType(UserEntity, [
+	"email",
+	"password",
+	"gender",
+	"height",
+	"weight",
+	"phone",
+	"consentMarketing",
+] as const) {}
