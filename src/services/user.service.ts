@@ -7,7 +7,7 @@ import { PlatformRepository } from "src/repositories/platform.repository";
 import { UserRepository } from "src/repositories/user.repository";
 
 @Injectable()
-export class UsersService {
+export class UserService {
 	constructor(
 		@InjectRepository(UserRepository)
 		private readonly userRepository: UserRepository,
@@ -17,7 +17,7 @@ export class UsersService {
 		private readonly oauthRepository: UserPlatformBridgeRepository
 	) {}
 
-	createUser(
+	async createUser(
 		email: string,
 		password: string,
 		gender: UserGenderType,
@@ -26,28 +26,35 @@ export class UsersService {
 		phone: string,
 		consentMarketing: boolean
 	): Promise<number> {
-		return this.userRepository
-			.insert({
-				email: email,
-				password: password,
-				gender: gender,
-				height: height,
-				weight: weight,
-				phone: phone,
-				consentMarketing,
-			})
-			.then(() => {
-				return this.readUserAccount(email, password);
-			});
+		await this.userRepository.insert({
+			email: email,
+			password: password,
+			gender: gender,
+			height: height,
+			weight: weight,
+			phone: phone,
+			consentMarketing: consentMarketing,
+		});
+
+		return await this.readUserByEmailAndPassword(email, password);
 	}
 
-	async readUserAccount(email: string, password: string): Promise<number> {
-		return (
-			await this.userRepository.findOneByEmailAndPassword(email, password)
-		).id;
+	async readUserByEmailAndPassword(
+		email: string,
+		password: string
+	): Promise<number> {
+		const user = await this.userRepository.findOneByEmailAndPassword(
+			email,
+			password
+		);
+		return user?.id;
 	}
 
-	async readUserEmail(email: string): Promise<UserEntity> {
+	async readUserByEmail(email: string): Promise<UserEntity> {
 		return await this.userRepository.findOneByEmail(email);
+	}
+
+	async readUserById(userId: number): Promise<UserEntity> {
+		return await this.userRepository.findOneById(userId);
 	}
 }

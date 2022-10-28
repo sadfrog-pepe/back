@@ -4,6 +4,9 @@ import { Repository } from "typeorm";
 
 @CustomRepository(UserEntity)
 export class UserRepository extends Repository<UserEntity> {
+	async findOneById(id: number): Promise<UserEntity> {
+		return await this.findOneBy({ id: id });
+	}
 	async findOneByEmailAndPassword(
 		email: string,
 		password: string
@@ -11,15 +14,11 @@ export class UserRepository extends Repository<UserEntity> {
 		return await this.findOneBy({
 			email: email,
 			password: password,
-		}).then((user) => {
-			return user;
 		});
 	}
 	async findOneByEmail(email: string): Promise<UserEntity> {
-		return this.findOneBy({
+		return await this.findOneBy({
 			email: email,
-		}).then((user) => {
-			return user;
 		});
 	}
 }
