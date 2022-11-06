@@ -1,15 +1,24 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import {
+	CacheModule,
+	MiddlewareConsumer,
+	Module,
+	NestModule,
+} from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import path from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LoggerMiddleware } from "./middlewares/logger.middleware";
+import { AuthModule } from "./modules/auth.module";
 import { UsersModule } from "./modules/user.module";
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
+			isGlobal: true,
+		}),
+		CacheModule.register({
 			isGlobal: true,
 		}),
 		TypeOrmModule.forRootAsync({
@@ -33,6 +42,7 @@ import { UsersModule } from "./modules/user.module";
 			},
 		}),
 		UsersModule,
+		AuthModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, ConfigService],
