@@ -84,6 +84,11 @@ export class AuthController {
 		description:
 			"쿠키에 있는 유저의 accessToken이나 refreshToken이 유효한 경우, 인증에 성공한다.",
 	})
+	@ApiAcceptedResponse({
+		description:
+			"쿠키에 있는 유저의 jwt 토큰이 유효해서, 로그인에 성공했다.",
+		type: String,
+	})
 	@ApiCookieAuth("accessToken")
 	isAuthenticated(@Res() res: Response): any {
 		return res.send({ message: "login success" });
