@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { UsersService } from "../services/user.service";
-import { UsersController } from "../controllers/users.controller";
+import { UserService } from "../services/user.service";
+import { UserController } from "../controllers/user.controller";
 import { CustomTypeOrmModule } from "src/settings/typeorm/custom-typeorm.module";
 import { UserRepository } from "src/repositories/user.repository";
 import { PlatformRepository } from "src/repositories/platform.repository";
@@ -14,7 +14,8 @@ import { UserPlatformBridgeRepository } from "src/repositories/oauth.repository"
 			UserPlatformBridgeRepository,
 		]),
 	],
-	providers: [UsersService],
-	controllers: [UsersController],
+	providers: [UserService],
+	controllers: [UserController],
+	exports: [UserService],
 })
 export class UsersModule {}
