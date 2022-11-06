@@ -16,3 +16,6 @@ packages/**/*.js
 .env
 .env.*
 
+# reference for own development
+src/repositories/repository.ref.ts
+
