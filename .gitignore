@@ -13,4 +13,6 @@ packages/**/*.d.ts
 packages/**/*.js
 
 # environment variables
+.env
 .env.*
+
