@@ -5,6 +5,7 @@ import {
 	NestModule,
 } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { SwaggerModule } from "@nestjs/swagger";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import path from "path";
 import { AppController } from "./app.controller";
@@ -43,6 +44,7 @@ import { UsersModule } from "./modules/user.module";
 		}),
 		UsersModule,
 		AuthModule,
+		SwaggerModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, ConfigService],
