@@ -37,9 +37,18 @@ export class AuthController {
 		@Body() userDto: RegisterUserApiDto,
 		@Res() res: Response
 	): Promise<any> {
-		await this.authService.registerUser(userDto);
-		const loginUserDto: LoginUserApiDto = userDto;
-		return this.loginUser(loginUserDto, res);
+		const { accessToken, refreshToken } =
+			await this.authService.registerUser(userDto);
+
+		res.cookie("accessToken", accessToken, {
+			httpOnly: true,
+			maxAge: 60 * 60 * 1000, // 1 hour
+		});
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+		});
+		return res.send({ message: "login success" });
 	}
 
 	@Post("login")

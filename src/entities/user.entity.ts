@@ -1,5 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEmail, IsNumber, IsString } from "class-validator";
+import {
+	IsBoolean,
+	IsEmail,
+	IsNotEmpty,
+	IsNumber,
+	IsString,
+} from "class-validator";
 import { Entity, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import { CommonEntity } from "./common/common.entity";
 import { UserPlatformBridgeEntity } from "./oauth.entity";
@@ -8,6 +14,7 @@ import { PlatformEntity } from "./platform.entity";
 @Entity()
 export class UserEntity extends CommonEntity {
 	@IsEmail()
+	@IsNotEmpty()
 	@Column({ unique: true })
 	@ApiProperty({
 		example: "aaa111@google.com",
@@ -16,6 +23,7 @@ export class UserEntity extends CommonEntity {
 	email: string;
 
 	@IsString()
+	@IsNotEmpty()
 	@Column()
 	@ApiProperty({
 		example: "1234",
@@ -56,6 +64,7 @@ export class UserEntity extends CommonEntity {
 	phone: string | null;
 
 	@IsBoolean()
+	@IsNotEmpty()
 	@Column({ type: "boolean", default: true })
 	@ApiProperty({
 		example: false,

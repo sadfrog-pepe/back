@@ -26,43 +26,47 @@ export class AuthService {
 		private readonly cacheManager: Cache
 	) {}
 
-	async registerUser(userDto: RegisterUserApiDto): Promise<UserEntity> {
-		const user: RegisterUserApiDto = await this.userService.readUserByEmail(
-			userDto.email
+	async registerUser(
+		userDto: RegisterUserApiDto
+	): Promise<{ accessToken: string; refreshToken: string } | undefined> {
+		const { email, password } = userDto;
+
+		const isUser: UserEntity = await this.userService.readUserByEmail(
+			email
 		);
 
-		if (user) {
-			Logger.log("Already registered user email : " + userDto.email);
+		if (isUser) {
 			throw new HttpException(
 				"Already registered user email",
 				HttpStatus.BAD_REQUEST
 			);
 		}
-		const userLoginDto: LoginUserApiDto = userDto;
-		await this.convertPassword(userLoginDto);
+		await this.convertPassword(userDto);
+		await this.userService.save(userDto);
 
-		const registerdUser = await this.userService.save(userDto);
-		if (!registerdUser) {
-			Logger.log("register error user : " + userDto.email);
-			throw new HttpException(
-				"register User error",
-				HttpStatus.INTERNAL_SERVER_ERROR
-			);
-		}
-
-		return registerdUser;
+		const userLoginDto: LoginUserApiDto = {
+			email: email,
+			password: password,
+		};
+		return await this.validateUser(userLoginDto);
 	}
 
 	async validateUser(
 		userDto: LoginUserApiDto
 	): Promise<{ accessToken: string; refreshToken: string } | undefined> {
 		const user = await this.userService.readUserByEmail(userDto.email);
-		if (!user) throw new UnauthorizedException();
+		if (!user)
+			throw new UnauthorizedException(
+				"user does not exist by validate local-auth user"
+			);
 		const validatedPassword = await compare(
 			userDto.password,
 			user.password
 		);
-		if (!validatedPassword) throw new UnauthorizedException();
+		if (!validatedPassword)
+			throw new UnauthorizedException(
+				"wrong password by validate local-auth user"
+			);
 
 		const accessToken = this.createAccessToken(user);
 		const { refreshToken, key } = await this.createRefreshToken(user);
@@ -103,7 +107,7 @@ export class AuthService {
 		await this.cacheManager.set(userId, refreshTokenKey, 5000);
 	}
 
-	async convertPassword(userDto: LoginUserApiDto): Promise<void> {
+	async convertPassword(userDto: RegisterUserApiDto): Promise<void> {
 		userDto.password = await hash(userDto.password, 10);
 		return Promise.resolve();
 	}
