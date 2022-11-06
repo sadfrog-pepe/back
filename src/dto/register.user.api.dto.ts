@@ -1,7 +1,7 @@
 import { PickType } from "@nestjs/swagger";
 import { UserEntity } from "src/entities/user.entity";
 
-export class CreateUserApiDto extends PickType(UserEntity, [
+export class RegisterUserApiDto extends PickType(UserEntity, [
 	"email",
 	"password",
 	"gender",
