@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserGenderType } from "src/entities/user-column-types/user-column-type";
+import { RegisterUserApiDto } from "src/dto/register.user.api.dto";
 import { UserEntity } from "src/entities/user.entity";
 import { UserPlatformBridgeRepository } from "src/repositories/oauth.repository";
 import { PlatformRepository } from "src/repositories/platform.repository";
@@ -17,37 +17,19 @@ export class UserService {
 		private readonly oauthRepository: UserPlatformBridgeRepository
 	) {}
 
-	async createUser(
-		email: string,
-		password: string,
-		gender: UserGenderType,
-		height: number,
-		weight: number,
-		phone: string,
-		consentMarketing: boolean
-	): Promise<number> {
-		await this.userRepository.insert({
-			email: email,
-			password: password,
-			gender: gender,
-			height: height,
-			weight: weight,
-			phone: phone,
-			consentMarketing: consentMarketing,
-		});
-
-		return await this.readUserByEmailAndPassword(email, password);
+	async save(userDto: RegisterUserApiDto): Promise<UserEntity | undefined> {
+		return await this.userRepository.save(userDto);
 	}
 
 	async readUserByEmailAndPassword(
 		email: string,
 		password: string
-	): Promise<number> {
+	): Promise<UserEntity> {
 		const user = await this.userRepository.findOneByEmailAndPassword(
 			email,
 			password
 		);
-		return user?.id;
+		return user;
 	}
 
 	async readUserByEmail(email: string): Promise<UserEntity> {
