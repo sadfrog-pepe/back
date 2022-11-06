@@ -26,9 +26,7 @@ export class AuthService {
 		private readonly cacheManager: Cache
 	) {}
 
-	async registerUser(
-		userDto: RegisterUserApiDto
-	): Promise<RegisterUserApiDto> {
+	async registerUser(userDto: RegisterUserApiDto): Promise<UserEntity> {
 		const user: RegisterUserApiDto = await this.userService.readUserByEmail(
 			userDto.email
 		);
