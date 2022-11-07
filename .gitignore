@@ -13,4 +13,9 @@ packages/**/*.d.ts
 packages/**/*.js
 
 # environment variables
+.env
 .env.*
+
+# reference for own development
+src/repositories/repository.ref.ts
+

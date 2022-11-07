@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserGenderType } from "src/entities/user-column-types/user-column-type";
+import { RegisterUserApiDto } from "src/dto/register.user.api.dto";
 import { UserEntity } from "src/entities/user.entity";
 import { UserPlatformBridgeRepository } from "src/repositories/oauth.repository";
 import { PlatformRepository } from "src/repositories/platform.repository";
 import { UserRepository } from "src/repositories/user.repository";
 
 @Injectable()
-export class UsersService {
+export class UserService {
 	constructor(
 		@InjectRepository(UserRepository)
 		private readonly userRepository: UserRepository,
@@ -17,37 +17,26 @@ export class UsersService {
 		private readonly oauthRepository: UserPlatformBridgeRepository
 	) {}
 
-	createUser(
+	async save(userDto: RegisterUserApiDto): Promise<UserEntity | undefined> {
+		return await this.userRepository.save(userDto);
+	}
+
+	async readUserByEmailAndPassword(
 		email: string,
-		password: string,
-		gender: UserGenderType,
-		height: number,
-		weight: number,
-		phone: string,
-		consentMarketing: boolean
-	): Promise<number> {
-		return this.userRepository
-			.insert({
-				email: email,
-				password: password,
-				gender: gender,
-				height: height,
-				weight: weight,
-				phone: phone,
-				consentMarketing,
-			})
-			.then(() => {
-				return this.readUserAccount(email, password);
-			});
+		password: string
+	): Promise<UserEntity> {
+		const user = await this.userRepository.findOneByEmailAndPassword(
+			email,
+			password
+		);
+		return user;
 	}
 
-	async readUserAccount(email: string, password: string): Promise<number> {
-		return (
-			await this.userRepository.findOneByEmailAndPassword(email, password)
-		).id;
-	}
-
-	async readUserEmail(email: string): Promise<UserEntity> {
+	async readUserByEmail(email: string): Promise<UserEntity> {
 		return await this.userRepository.findOneByEmail(email);
+	}
+
+	async readUserById(userId: number): Promise<UserEntity> {
+		return await this.userRepository.findOneById(userId);
 	}
 }

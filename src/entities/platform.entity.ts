@@ -1,3 +1,4 @@
+import { IsString } from "class-validator";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { CommonEntity } from "./common/common.entity";
 import { UserPlatformBridgeEntity } from "./oauth.entity";
@@ -5,6 +6,7 @@ import { UserEntity } from "./user.entity";
 
 @Entity()
 export class PlatformEntity extends CommonEntity {
+	@IsString()
 	@Column()
 	name: string;
 
