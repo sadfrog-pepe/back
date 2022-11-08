@@ -5,11 +5,13 @@ import {
 	NestModule,
 } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_FILTER } from "@nestjs/core";
 import { SwaggerModule } from "@nestjs/swagger";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import path from "path";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { HttpExceptionFilter } from "./filters/http-exception.filter";
 import { LoggerMiddleware } from "./middlewares/logger.middleware";
 import { AuthModule } from "./modules/auth.module";
 import { UsersModule } from "./modules/user.module";
@@ -47,7 +49,14 @@ import { UsersModule } from "./modules/user.module";
 		SwaggerModule,
 	],
 	controllers: [AppController],
-	providers: [AppService, ConfigService],
+	providers: [
+		AppService,
+		ConfigService,
+		{
+			provide: APP_FILTER,
+			useClass: HttpExceptionFilter,
+		},
+	],
 })
 export class AppModule implements NestModule {
 	configure(consumer: MiddlewareConsumer): any {

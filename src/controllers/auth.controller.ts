@@ -5,6 +5,7 @@ import {
 	Post,
 	Req,
 	Res,
+	UseFilters,
 	UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/auth-guards/jwt-auth.guard";
@@ -20,6 +21,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from "@nestjs/swagger";
+import { HttpExceptionFilter } from "src/filters/http-exception.filter";
 
 @Controller("api/auths")
 @ApiTags("유저 인증 및 검증 API")
@@ -27,6 +29,7 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@Post("register")
+	@UseFilters(new HttpExceptionFilter())
 	@ApiOperation({
 		summary: "유저 등록 api",
 		description:
