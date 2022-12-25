@@ -34,7 +34,7 @@ import { ProductModule } from "./modules/product.module";
                     retryAttempts: configService.get("env") === "prod" ? 10 : 1,
                     type: "mysql",
                     host: configService.get("DB_HOST") || "localhost",
-                    port: configService.get("DB_PORT") || 3306,
+                    port: Number(configService.get("DB_PORT")) || 3306,
                     database: configService.get("DB_NAME") || "vintage",
                     username: configService.get("DB_USER") || "root",
                     password: configService.get("DB_PASSWORD") || "",
