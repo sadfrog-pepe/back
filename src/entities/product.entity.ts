@@ -1,6 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { CategoryEntity } from "./category.entity";
 import { CommonEntity } from "./common/common.entity";
+import { ProductImageEntity } from "./product-image.entity";
 import { ProductOptionEntity } from "./product-option.entity";
 import { SellerEntity } from "./seller.entity";
 
@@ -29,4 +30,7 @@ export class ProductEntity extends CommonEntity {
 
     @OneToMany(() => ProductOptionEntity, (po) => po.product)
     options: ProductOptionEntity[];
+
+    @OneToMany(() => ProductImageEntity, (pi) => pi.product)
+    images: ProductImageEntity[];
 }

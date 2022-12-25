@@ -3,7 +3,7 @@ import { CommonEntity } from "./common/common.entity";
 import { ProductEntity } from "./product.entity";
 
 @Entity()
-export class ProductOptionEntity extends CommonEntity {
+export class ProductImageEntity extends CommonEntity {
     @Column()
     productId: number;
 
@@ -14,7 +14,7 @@ export class ProductOptionEntity extends CommonEntity {
      * below are relations
      */
 
-    @ManyToOne(() => ProductEntity, (p) => p.options)
+    @ManyToOne(() => ProductEntity, (p) => p.images)
     @JoinColumn({ name: "productId", referencedColumnName: "id" })
     product: ProductEntity;
 }
