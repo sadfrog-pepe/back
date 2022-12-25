@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { RegisterUserApiDto } from "src/dto/register.user.api.dto";
+import { RegisterUserDto } from "src/dtos/register.user.dto";
 import { UserEntity } from "src/entities/user.entity";
 import { UserPlatformBridgeRepository } from "src/repositories/oauth.repository";
 import { PlatformRepository } from "src/repositories/platform.repository";
@@ -17,7 +17,7 @@ export class UserService {
 		private readonly oauthRepository: UserPlatformBridgeRepository
 	) {}
 
-	async save(userDto: RegisterUserApiDto): Promise<UserEntity | undefined> {
+	async save(userDto: RegisterUserDto): Promise<UserEntity | undefined> {
 		return await this.userRepository.save(userDto);
 	}
 
@@ -38,5 +38,14 @@ export class UserService {
 
 	async readUserById(userId: number): Promise<UserEntity> {
 		return await this.userRepository.findOneById(userId);
+	}
+
+	async checkExistedUserByEmail(email: string): Promise<Boolean> {
+		const user: UserEntity =
+			await this.userRepository.findOneByEmail_WithoutDeletedAt(email);
+		if (!user) {
+			return false;
+		}
+		return true;
 	}
 }

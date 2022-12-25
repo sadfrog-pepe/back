@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	CACHE_MANAGER,
 	HttpException,
 	HttpStatus,
@@ -7,108 +8,131 @@ import {
 	Logger,
 	UnauthorizedException,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { compare, hash } from "bcrypt";
 import { Cache } from "cache-manager";
 import { AccessTokenPayload } from "src/auth/payloads/access-token.payload";
 import { RefreshTokenPayload } from "src/auth/payloads/refresh-token.payload";
-import { LoginUserApiDto } from "src/dto/login.user.api.dto";
-import { RegisterUserApiDto } from "src/dto/register.user.api.dto";
+import { ERROR_MESSAGE } from "src/common/error-message";
+import { LoginUserDto } from "src/dtos/login.user.dto";
+import { RegisterUserDto } from "src/dtos/register.user.dto";
 import { UserEntity } from "src/entities/user.entity";
 import { UserService } from "./user.service";
 
 @Injectable()
 export class AuthService {
 	constructor(
-		private readonly userService: UserService,
+		private readonly usersService: UserService,
 		private readonly jwtService: JwtService,
-		@Inject(CACHE_MANAGER)
-		private readonly cacheManager: Cache
+		private readonly configService: ConfigService
 	) {}
 
-	async registerUser(
-		userDto: RegisterUserApiDto
-	): Promise<{ accessToken: string; refreshToken: string } | undefined> {
-		const { email, password } = userDto;
+	async tokenize(user: UserEntity) {
+		const token = this.jwtService.sign(user);
 
-		const isUser: UserEntity = await this.userService.readUserByEmail(
-			email
-		);
+		return token;
+	}
 
-		if (isUser) {
+	async vaildateUser(email: string, plainTextPassword: string): Promise<any> {
+		try {
+			const user = await this.usersService.readUserByEmail(email);
+			await this.verifyPassword(plainTextPassword, user.password);
+			const { password, ...result } = user;
+			return result;
+		} catch (error) {
 			throw new HttpException(
-				"Already registered user email",
+				"Wrong credentials provided",
 				HttpStatus.BAD_REQUEST
 			);
 		}
-		await this.convertPassword(userDto);
-		await this.userService.save(userDto);
-
-		const userLoginDto: LoginUserApiDto = {
-			email: email,
-			password: password,
-		};
-		return await this.validateUser(userLoginDto);
 	}
 
-	async validateUser(
-		userDto: LoginUserApiDto
-	): Promise<{ accessToken: string; refreshToken: string } | undefined> {
-		const user = await this.userService.readUserByEmail(userDto.email);
-		if (!user)
-			throw new UnauthorizedException(
-				"user does not exist by validate local-auth user"
-			);
-		const validatedPassword = await compare(
-			userDto.password,
-			user.password
+	private async verifyPassword(
+		plainTextPassword: string,
+		hashedPassword: string
+	) {
+		const isPasswordMatch = await compare(
+			plainTextPassword,
+			hashedPassword
 		);
-		if (!validatedPassword)
-			throw new UnauthorizedException(
-				"wrong password by validate local-auth user"
+		if (!isPasswordMatch) {
+			throw new HttpException(
+				"Wrong credentials provided",
+				HttpStatus.BAD_REQUEST
 			);
-
-		const accessToken = this.createAccessToken(user);
-		const { refreshToken, key } = await this.createRefreshToken(user);
-		await this.setRefreshTokenKey(String(user.id), key);
-
-		return { accessToken, refreshToken };
+		}
 	}
 
-	async tokenValidateUser(
-		payload: AccessTokenPayload | RefreshTokenPayload
-	): Promise<UserEntity | undefined> {
-		return await this.userService.readUserById(payload.id);
-	}
+	async register(createUserDto: UserEntity) {
+		const hashedPassword = await hash(createUserDto.password, 10);
 
-	createAccessToken(user: UserEntity): string {
-		const payload: AccessTokenPayload = { id: user.id, email: user.email };
-		return this.jwtService.sign(payload, {
-			expiresIn: "1h",
+		const user = await this.usersService.save({
+			...createUserDto,
+			password: hashedPassword,
 		});
+
+		if (!user) {
+			throw new BadRequestException(ERROR_MESSAGE.FAIL_TO_CREATE_USER);
+		}
+
+		const { password, ...returnUser } = user;
+		return returnUser;
 	}
 
-	async createRefreshToken(
-		user: UserEntity
-	): Promise<{ refreshToken: string; key: string }> {
-		const key = await hash(user.email, 10);
-		const payload: RefreshTokenPayload = {
-			id: user.id,
-			email: user.email,
-			key: key,
+	getCookieWithJwtAccessToken(id: number) {
+		const payload = { id };
+		const token = this.jwtService.sign(payload, {
+			secret: this.configService.get("JWT_ACCESS_TOKEN_SECRET"),
+			expiresIn: `${this.configService.get(
+				"JWT_ACCESS_TOKEN_EXPIRATION_TIME"
+			)}s`,
+		});
+
+		return {
+			accessToken: token,
+			domain: "localhost",
+			path: "/",
+			httpOnly: true,
+			maxAge:
+				Number(
+					this.configService.get("JWT_ACCESS_TOKEN_EXPIRATION_TIME")
+				) * 1000,
 		};
-		const refreshToken = this.jwtService.sign(payload, {
-			expiresIn: "7d",
+	}
+
+	getCookieWithJwtRefreshToken(id: number) {
+		const payload = { id };
+		const token = this.jwtService.sign(payload, {
+			secret: this.configService.get("JWT_REFRESH_TOKEN_SECRET"),
+			expiresIn: `${this.configService.get(
+				"JWT_REFRESH_TOKEN_EXPIRATION_TIME"
+			)}s`,
 		});
-		return { refreshToken, key };
+
+		return {
+			refreshToken: token,
+			domain: "localhost",
+			path: "/",
+			httpOnly: true,
+			maxAge: 1000,
+		};
 	}
 
-	async setRefreshTokenKey(userId: string, refreshTokenKey: string) {
-		await this.cacheManager.set(userId, refreshTokenKey, 5000);
-	}
-
-	async convertPassword(userDto: RegisterUserApiDto): Promise<void> {
-		userDto.password = await hash(userDto.password, 10);
-		return Promise.resolve();
+	getCookiesForLogOut() {
+		return {
+			accessOption: {
+				domain: "localhost",
+				path: "/",
+				httpOnly: true,
+				maxAge: 0,
+			},
+			refreshOption: {
+				domain: "localhost",
+				path: "/",
+				httpOnly: true,
+				maxAge: 0,
+			},
+		};
 	}
 }
