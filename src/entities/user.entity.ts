@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsEmail, IsNotEmpty, IsString } from "class-validator";
-import { IsNotEmptyString } from "src/decorators/is-not-empty-string.decorator";
-import { IsOptionalNumber } from "src/decorators/is-optional-number.decorator";
-import { IsOptionalString } from "src/decorators/is-optional-string.decorator";
+import { IsNotEmptyString } from "../decorators/is-not-empty-string.decorator";
+import { IsOptionalNumber } from "../decorators/is-optional-number.decorator";
+import { IsOptionalString } from "../decorators/is-optional-string.decorator";
 import { Entity, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import { CommonEntity } from "./common/common.entity";
 import { UserPlatformBridgeEntity } from "./oauth.entity";

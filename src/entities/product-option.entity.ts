@@ -10,6 +10,9 @@ export class ProductOptionEntity extends CommonEntity {
     @Column()
     name: string;
 
+    @Column()
+    salePrice: number;
+
     /**
      * below are relations
      */
