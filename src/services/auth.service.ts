@@ -26,24 +26,22 @@ export class AuthService {
         private readonly jwtService: JwtService
     ) {}
 
-    async tokenize(user: UserEntity) {
+    tokenize(user: UserEntity) {
         const token = this.jwtService.sign(user);
 
         return token;
     }
 
     async vaildateUser(email: string, plainTextPassword: string): Promise<any> {
-        try {
-            const user = await this.usersService.readUserByEmail(email);
-            await this.verifyPassword(plainTextPassword, user.password);
-            const { password, ...result } = user;
-            return result;
-        } catch (error) {
-            throw new HttpException(
-                "Wrong credentials provided",
-                HttpStatus.BAD_REQUEST
-            );
+        const user = await this.usersService.readUserByEmail(email);
+
+        if (!user) {
+            throw new BadRequestException(ERROR_MESSAGE.FAIL_TO_FIND_EMAIL);
         }
+
+        await this.verifyPassword(plainTextPassword, user.password);
+        const { password, ...result } = user;
+        return result;
     }
 
     private async verifyPassword(
@@ -55,10 +53,7 @@ export class AuthService {
             hashedPassword
         );
         if (!isPasswordMatch) {
-            throw new HttpException(
-                "Wrong credentials provided",
-                HttpStatus.BAD_REQUEST
-            );
+            throw new BadRequestException(ERROR_MESSAGE.FAIL_TO_LOGIN);
         }
     }
 
