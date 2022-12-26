@@ -34,7 +34,7 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post("login")
     async login(@User() user: UserEntity) {
-        const accessToken = this.authService.tokenize(user);
+        const accessToken = await this.authService.tokenize(user);
         return { accessToken };
     }
 

@@ -26,9 +26,8 @@ export class AuthService {
         private readonly jwtService: JwtService
     ) {}
 
-    tokenize(user: UserEntity) {
-        const token = this.jwtService.sign(user);
-
+    async tokenize(user: UserEntity) {
+        const token = await this.jwtService.sign(user);
         return token;
     }
 
