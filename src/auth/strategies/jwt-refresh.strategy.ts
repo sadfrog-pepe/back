@@ -10,31 +10,27 @@ import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
-	Strategy,
-	"jwt-refresh"
+    Strategy,
+    "jwt-refresh"
 ) {
-	constructor(
-		private readonly authService: AuthService,
-		 private readonly userService: UserService,
-		 private readonly configService: ConfigService,
-		 private readonly jwtService: JwtService,
-	) {
-		super({
-			jwtFromRequest: ExtractJwt.fromExtractors([
-				(request: Request) => request?.cookies?.refreshToken,
-			]),
-			secretOrKey: configService.get('JWT_REFRESH_TOKEN_SECRET'),
-      		passReqToCallback: true,
-		});
-	}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly userService: UserService,
+        private readonly configService: ConfigService,
+        private readonly jwtService: JwtService
+    ) {
+        super({
+            jwtFromRequest: ExtractJwt.fromExtractors([
+                (request: Request) => request?.cookies?.refreshToken,
+            ]),
+            secretOrKey: configService.get("JWT_REFRESH_TOKEN_SECRET"),
+            passReqToCallback: true,
+        });
+    }
 
-	async validate(req, payload: any) {
-		const refreshToken = req.cookies?.refreshToken;
-		this.jwtService.verify(refreshToken);
-		return this.userService.readUserById(refreshToken.id);
-		// return this.userService.getUserIfRefreshTokenMatches(
-		//   refreshToken,
-		//   payload.id,
-		// );
-	  }
+    async validate(req, payload: any) {
+        const refreshToken = req.cookies?.refreshToken;
+        this.jwtService.verify(refreshToken);
+        return this.userService.readUserById(refreshToken.id);
+    }
 }

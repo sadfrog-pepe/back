@@ -10,21 +10,21 @@ import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
-	constructor(
-		private readonly authService: AuthService,
-		private readonly userService: UserService,
-		private readonly configService: ConfigService,
-		private readonly jwtService: JwtService
-	) {
-		super({
-			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-			ignoreExpiration: true,
-			secretOrKey: configService.get("JWT_ACCESS_TOKEN_SECRET"),
-		});
-	}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly userService: UserService,
+        private readonly configService: ConfigService,
+        private readonly jwtService: JwtService
+    ) {
+        super({
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: true,
+            secretOrKey: configService.get("JWT_ACCESS_TOKEN_SECRET"),
+        });
+    }
 
-	async validate(payload: any) {
-		const { iat, exp, ...user } = payload;
-		return user;
-	}
+    async validate(payload: any) {
+        const { iat, exp, ...user } = payload;
+        return user;
+    }
 }
