@@ -1,14 +1,13 @@
 import {
-	BadRequestException,
-	CACHE_MANAGER,
-	HttpException,
-	HttpStatus,
-	Inject,
-	Injectable,
-	Logger,
-	UnauthorizedException,
+    BadRequestException,
+    CACHE_MANAGER,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+    Logger,
+    UnauthorizedException,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { compare, hash } from "bcrypt";
 import { Cache } from "cache-manager";
@@ -22,117 +21,60 @@ import { UserService } from "./user.service";
 
 @Injectable()
 export class AuthService {
-	constructor(
-		private readonly usersService: UserService,
-		private readonly jwtService: JwtService,
-		private readonly configService: ConfigService
-	) {}
+    constructor(
+        private readonly usersService: UserService,
+        private readonly jwtService: JwtService
+    ) {}
 
-	async tokenize(user: UserEntity) {
-		const token = this.jwtService.sign(user);
+    async tokenize(user: UserEntity) {
+        const token = this.jwtService.sign(user);
 
-		return token;
-	}
+        return token;
+    }
 
-	async vaildateUser(email: string, plainTextPassword: string): Promise<any> {
-		try {
-			const user = await this.usersService.readUserByEmail(email);
-			await this.verifyPassword(plainTextPassword, user.password);
-			const { password, ...result } = user;
-			return result;
-		} catch (error) {
-			throw new HttpException(
-				"Wrong credentials provided",
-				HttpStatus.BAD_REQUEST
-			);
-		}
-	}
+    async vaildateUser(email: string, plainTextPassword: string): Promise<any> {
+        try {
+            const user = await this.usersService.readUserByEmail(email);
+            await this.verifyPassword(plainTextPassword, user.password);
+            const { password, ...result } = user;
+            return result;
+        } catch (error) {
+            throw new HttpException(
+                "Wrong credentials provided",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
 
-	private async verifyPassword(
-		plainTextPassword: string,
-		hashedPassword: string
-	) {
-		const isPasswordMatch = await compare(
-			plainTextPassword,
-			hashedPassword
-		);
-		if (!isPasswordMatch) {
-			throw new HttpException(
-				"Wrong credentials provided",
-				HttpStatus.BAD_REQUEST
-			);
-		}
-	}
+    private async verifyPassword(
+        plainTextPassword: string,
+        hashedPassword: string
+    ) {
+        const isPasswordMatch = await compare(
+            plainTextPassword,
+            hashedPassword
+        );
+        if (!isPasswordMatch) {
+            throw new HttpException(
+                "Wrong credentials provided",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
 
-	async register(createUserDto: UserEntity) {
-		const hashedPassword = await hash(createUserDto.password, 10);
+    async register(createUserDto: UserEntity) {
+        const hashedPassword = await hash(createUserDto.password, 10);
 
-		const user = await this.usersService.save({
-			...createUserDto,
-			password: hashedPassword,
-		});
+        const user = await this.usersService.save({
+            ...createUserDto,
+            password: hashedPassword,
+        });
 
-		if (!user) {
-			throw new BadRequestException(ERROR_MESSAGE.FAIL_TO_CREATE_USER);
-		}
+        if (!user) {
+            throw new BadRequestException(ERROR_MESSAGE.FAIL_TO_CREATE_USER);
+        }
 
-		const { password, ...returnUser } = user;
-		return returnUser;
-	}
-
-	getCookieWithJwtAccessToken(id: number) {
-		const payload = { id };
-		const token = this.jwtService.sign(payload, {
-			secret: this.configService.get("JWT_ACCESS_TOKEN_SECRET"),
-			expiresIn: `${this.configService.get(
-				"JWT_ACCESS_TOKEN_EXPIRATION_TIME"
-			)}s`,
-		});
-
-		return {
-			accessToken: token,
-			domain: "localhost",
-			path: "/",
-			httpOnly: true,
-			maxAge:
-				Number(
-					this.configService.get("JWT_ACCESS_TOKEN_EXPIRATION_TIME")
-				) * 1000,
-		};
-	}
-
-	getCookieWithJwtRefreshToken(id: number) {
-		const payload = { id };
-		const token = this.jwtService.sign(payload, {
-			secret: this.configService.get("JWT_REFRESH_TOKEN_SECRET"),
-			expiresIn: `${this.configService.get(
-				"JWT_REFRESH_TOKEN_EXPIRATION_TIME"
-			)}s`,
-		});
-
-		return {
-			refreshToken: token,
-			domain: "localhost",
-			path: "/",
-			httpOnly: true,
-			maxAge: 1000,
-		};
-	}
-
-	getCookiesForLogOut() {
-		return {
-			accessOption: {
-				domain: "localhost",
-				path: "/",
-				httpOnly: true,
-				maxAge: 0,
-			},
-			refreshOption: {
-				domain: "localhost",
-				path: "/",
-				httpOnly: true,
-				maxAge: 0,
-			},
-		};
-	}
+        const { password, ...returnUser } = user;
+        return returnUser;
+    }
 }

@@ -7,6 +7,7 @@ import { Request } from "express";
 import { UserService } from "src/services/user.service";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { JwtConstants } from "src/common/jwt.constants";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
@@ -19,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: true,
-            secretOrKey: configService.get("JWT_ACCESS_TOKEN_SECRET"),
+            secretOrKey: JwtConstants.ACCESS_TOKEN_SECRET,
         });
     }
 
