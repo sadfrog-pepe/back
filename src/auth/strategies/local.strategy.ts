@@ -1,24 +1,29 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
-import { LoginUserApiDto } from "src/dto/login.user.api.dto";
+import { LoginUserDto } from "src/dtos/login.user.dto";
 import { AuthService } from "src/services/auth.service";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, "local") {
-	constructor(private readonly authService: AuthService) {
+	constructor(
+		private authService: AuthService,
+		private readonly jwtService: JwtService
+	) {
 		super({
-			usernameField: "id",
+			usernameField: "email",
+			passwordField: "password",
 		});
 	}
 
-	async validate(payload: LoginUserApiDto) {
-		const user = await this.authService.validateUser(payload);
+	async validate(email: string, password: string): Promise<any> {
+		const user = await this.authService.vaildateUser(email, password);
 		if (!user) {
-			return new UnauthorizedException({
-				message: "user does not exist by local authentication",
-			});
+			throw new UnauthorizedException();
 		}
+
 		return user;
+		// return this.jwtService.sign({ ...user });
 	}
 }
