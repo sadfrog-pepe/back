@@ -11,11 +11,6 @@ async function bootstrap() {
 
     app.use(cookieParser());
     app.enableCors();
-    app.useGlobalPipes(
-        new ValidationPipe({
-            transform: true,
-        })
-    );
     setUpSwagger(app);
 
     await app.listen(port);
