@@ -56,8 +56,15 @@ export class AuthService {
         }
     }
 
-    async register(createUserDto: UserEntity) {
+    async register(createUserDto: RegisterUserDto) {
         const hashedPassword = await hash(createUserDto.password, 10);
+        const isUser = await this.usersService.readUserByEmail(
+            createUserDto.email
+        );
+
+        if (isUser) {
+            throw new BadRequestException(ERROR_MESSAGE.FAIL_TO_REGISTER_EMAIL);
+        }
 
         const user = await this.usersService.save({
             ...createUserDto,
