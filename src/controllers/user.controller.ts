@@ -6,11 +6,11 @@ import { UserService } from "../services/user.service";
 
 @Controller("api/users")
 export class UserController {
-	constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) {}
 
-	@UseGuards(JwtAuthGuard)
-	@Get("profile")
-	async getProfile(@User() user: UserEntity) {
-		return user;
-	}
+    @UseGuards(JwtAuthGuard)
+    @Get("profile")
+    async getProfile(@User() user: UserEntity) {
+        return user;
+    }
 }

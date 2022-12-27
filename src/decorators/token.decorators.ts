@@ -5,4 +5,4 @@ export const Token = createParamDecorator(
         const response = ctx.switchToHttp().getResponse();
         return response.locals.jwt;
     }
-)
+);

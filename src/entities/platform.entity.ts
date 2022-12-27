@@ -6,20 +6,20 @@ import { UserEntity } from "./user.entity";
 
 @Entity()
 export class PlatformEntity extends CommonEntity {
-	@IsString()
-	@Column()
-	name: string;
+    @IsString()
+    @Column()
+    name: string;
 
-	// below are relations
+    // below are relations
 
-	@OneToMany(() => UserPlatformBridgeEntity, (bridge) => bridge.platformId)
-	oauthBridges: UserPlatformBridgeEntity[];
+    @OneToMany(() => UserPlatformBridgeEntity, (bridge) => bridge.platformId)
+    oauthBridges: UserPlatformBridgeEntity[];
 
-	@ManyToMany(() => UserEntity, (user) => user.platforms)
-	@JoinTable({
-		name: "user_platform_bridge_entity",
-		joinColumn: { name: "platformId", referencedColumnName: "id" },
-		inverseJoinColumn: { name: "userId", referencedColumnName: "id" },
-	})
-	users: UserEntity[];
+    @ManyToMany(() => UserEntity, (user) => user.platforms)
+    @JoinTable({
+        name: "user_platform_bridge_entity",
+        joinColumn: { name: "platformId", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "userId", referencedColumnName: "id" },
+    })
+    users: UserEntity[];
 }

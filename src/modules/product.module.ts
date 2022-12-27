@@ -5,8 +5,8 @@ import { ProductService } from "src/services/product.service";
 import { CustomTypeOrmModule } from "src/settings/typeorm/custom-typeorm.module";
 
 @Module({
-	imports: [CustomTypeOrmModule.forCustomRepository([ProductRepository])],
-	controllers: [ProductController],
-	providers: [ProductService],
+    imports: [CustomTypeOrmModule.forCustomRepository([ProductRepository])],
+    controllers: [ProductController],
+    providers: [ProductService],
 })
 export class ProductModule {}

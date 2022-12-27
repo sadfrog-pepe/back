@@ -7,15 +7,15 @@ import { PlatformRepository } from "src/repositories/platform.repository";
 import { UserPlatformBridgeRepository } from "src/repositories/oauth.repository";
 
 @Module({
-	imports: [
-		CustomTypeOrmModule.forCustomRepository([
-			UserRepository,
-			PlatformRepository,
-			UserPlatformBridgeRepository,
-		]),
-	],
-	providers: [UserService],
-	controllers: [UserController],
-	exports: [UserService],
+    imports: [
+        CustomTypeOrmModule.forCustomRepository([
+            UserRepository,
+            PlatformRepository,
+            UserPlatformBridgeRepository,
+        ]),
+    ],
+    providers: [UserService],
+    controllers: [UserController],
+    exports: [UserService],
 })
 export class UsersModule {}
