@@ -5,47 +5,47 @@ import { ProductRepository } from "src/repositories/product.repository";
 
 @Injectable()
 export class ProductService {
-	constructor(
-		@InjectRepository(ProductRepository)
-		private readonly productRepository: ProductRepository
-	) {}
+    constructor(
+        @InjectRepository(ProductRepository)
+        private readonly productRepository: ProductRepository
+    ) {}
 
-	async getAll(categoryId?: number) {
-		// await this.productRepository.find({
-		// 	select: {
-		// 		id: true,
-		// 		createdAt: true,
-		// 	},
-		// });
+    async getAll(categoryId?: number) {
+        // await this.productRepository.find({
+        // 	select: {
+        // 		id: true,
+        // 		createdAt: true,
+        // 	},
+        // });
 
-		// if (categoryId) {
-		// 	const products = await this.productRepository.find({
-		// 		where: {
-		// 			categoryId,
-		// 		},
-		// 		order: {
-		// 			createdAt: "DESC",
-		// 		},
-		// 	});
-		// 	return products;
-		// }
+        // if (categoryId) {
+        // 	const products = await this.productRepository.find({
+        // 		where: {
+        // 			categoryId,
+        // 		},
+        // 		order: {
+        // 			createdAt: "DESC",
+        // 		},
+        // 	});
+        // 	return products;
+        // }
 
-		// return await this.productRepository.find({
-		// 	order: {
-		// 		createdAt: "DESC",
-		// 	},
-		// });
+        // return await this.productRepository.find({
+        // 	order: {
+        // 		createdAt: "DESC",
+        // 	},
+        // });
 
-		return await this.productRepository.getAll(categoryId);
+        return await this.productRepository.getAll(categoryId);
 
-		// return products.map((product) => {
+        // return products.map((product) => {
 
-		//     const image  = product.iamges.at(0);
-		//     const option = product.options.at(0);
+        //     const image  = product.iamges.at(0);
+        //     const option = product.options.at(0);
 
-		//     return { id : product.id, name: product.name, image, option};
-		// })
-	}
+        //     return { id : product.id, name: product.name, image, option};
+        // })
+    }
 }
 
 // type product = {

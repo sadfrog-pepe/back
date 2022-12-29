@@ -4,13 +4,13 @@ import { ProductEntity } from "./product.entity";
 
 @Entity()
 export class CategoryEntity extends CommonEntity {
-	@Column()
-	name: string;
+    @Column()
+    name: string;
 
-	/**
-	 * below are relations
-	 */
+    /**
+     * below are relations
+     */
 
-	@OneToMany(() => ProductEntity, (p) => p.category)
-	products: ProductEntity[];
+    @OneToMany(() => ProductEntity, (p) => p.category)
+    products: ProductEntity[];
 }
