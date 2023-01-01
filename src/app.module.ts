@@ -17,6 +17,7 @@ import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/auth-guards/jwt-auth.guard";
 import { HttpExceptionFilter } from "./filters/http-exception.filter";
 import { ProductModule } from "./modules/product.module";
+import { CrawlingModule } from "./external/crawling/crawling.module";
 
 @Module({
     imports: [
@@ -30,9 +31,10 @@ import { ProductModule } from "./modules/product.module";
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => {
-                return {
-                    retryAttempts: configService.get("env") === "prod" ? 10 : 1,
-                    type: "mysql",
+                const options = {
+                    retryAttempts:
+                        configService.get("NODE_ENV") === "prod" ? 10 : 1,
+                    type: "mysql" as const,
                     host: configService.get("DB_HOST") || "localhost",
                     port: Number(configService.get("DB_PORT")) || 3306,
                     database: configService.get("DB_NAME") || "vintage",
@@ -46,11 +48,14 @@ import { ProductModule } from "./modules/product.module";
                     logging: false,
                     timezone: "local",
                 };
+
+                return options;
             },
         }),
         UsersModule,
         AuthModule,
         ProductModule,
+        CrawlingModule,
     ],
     controllers: [AppController],
     providers: [

@@ -3,8 +3,9 @@ import { CommonEntity } from "./common/common.entity";
 import { ProductEntity } from "./product.entity";
 
 export const ImageType = {
-    Thumbnail: "Thumbnail",
     Main: "Main",
+    Sub: "Sub",
+    Thumbnail: "Thumbnail",
 } as const;
 
 export type ImageType = keyof typeof ImageType;
