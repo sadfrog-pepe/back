@@ -44,7 +44,7 @@ import { CrawlingModule } from "./external/crawling/crawling.module";
                         path.join(__dirname, "entities/**/*.entity.ts"),
                         path.join(__dirname, "entities/**/*.entity.js"),
                     ],
-                    synchronize: true,
+                    synchronize: false,
                     logging: false,
                     timezone: "local",
                 };

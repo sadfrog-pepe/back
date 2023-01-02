@@ -16,6 +16,6 @@ export const dataSource = new DataSource({
         path.join(__dirname, "src/entities/**/*.entity.ts"),
         path.join(__dirname, "dist/entities/**/*.entity.js"),
     ],
-    synchronize: true,
+    synchronize: false,
     logging: true,
 });
