@@ -35,11 +35,11 @@ import { CrawlingModule } from "./external/crawling/crawling.module";
                     retryAttempts:
                         configService.get("NODE_ENV") === "prod" ? 10 : 1,
                     type: "mysql" as const,
-                    host: configService.get("DB_HOST") || "localhost",
-                    port: Number(configService.get("DB_PORT")) || 3306,
-                    database: configService.get("DB_NAME") || "vintage",
-                    username: configService.get("DB_USER") || "root",
-                    password: configService.get("DB_PASSWORD") || "",
+                    host: configService.get("DB_HOST"),
+                    port: Number(configService.get("DB_PORT")),
+                    database: configService.get("DB_NAME"),
+                    username: configService.get("DB_USER"),
+                    password: configService.get("DB_PASSWORD"),
                     entities: [
                         path.join(__dirname, "entities/**/*.entity.ts"),
                         path.join(__dirname, "entities/**/*.entity.js"),
