@@ -1,8 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsPositive } from "class-validator";
-import { IsNotEmptyNumber } from "src/decorators/is-not-empty-number.decorator";
+import { IsNotEmptyNumber } from "../decorators/is-not-empty-number.decorator";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
-import { CommonEntity } from "./common/common.entity";
 import { CreatedDateOnlyCommonEntity } from "./common/created-date-only-common.entity";
 import { ProductOptionEntity } from "./product-option.entity";
 
@@ -33,6 +32,6 @@ export class ProductOptionPriceEntity extends CreatedDateOnlyCommonEntity {
         () => ProductOptionEntity,
         (productOption) => productOption.prices
     )
-    @JoinColumn({ name: "productId", referencedColumnName: "id" })
+    @JoinColumn({ name: "productOptionId", referencedColumnName: "id" })
     product: ProductOptionEntity;
 }

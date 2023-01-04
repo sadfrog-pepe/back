@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmptyString } from "src/decorators/is-not-empty-string.decorator";
+import { IsNotEmptyString } from "../decorators/is-not-empty-string.decorator";
 import { Column, Entity, OneToMany } from "typeorm";
 import { CommonEntity } from "./common/common.entity";
 import { ProductEntity } from "./product.entity";

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmptyString } from "src/decorators/is-not-empty-string.decorator";
-import { IsOptionalNumber } from "src/decorators/is-optional-number.decorator";
+import { IsNotEmptyString } from "../decorators/is-not-empty-string.decorator";
+import { IsOptionalNumber } from "../decorators/is-optional-number.decorator";
 import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from "typeorm";
 import { CommonEntity } from "./common/common.entity";
 import { ProductEntity } from "./product.entity";
@@ -21,7 +21,7 @@ export class CategoryEntity extends CommonEntity {
         examples: [3, null],
     })
     @IsOptionalNumber()
-    @Column()
+    @Column({ nullable: true })
     parentId: number;
 
     /**
