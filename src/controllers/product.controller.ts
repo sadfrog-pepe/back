@@ -6,6 +6,8 @@ import {
     ApiTags,
 } from "@nestjs/swagger";
 import { getAllProductDto } from "src/dtos/get-all-product.dto";
+import { PageOptionsDto } from "src/dtos/pagination/page-options.dto";
+import { PageDto } from "src/dtos/pagination/page.dto";
 import { ProductDto } from "src/dtos/responses/product.dto";
 import { ProductService } from "src/services/product.service";
 
@@ -43,10 +45,16 @@ export class ProductController {
     }
 
     @ApiOperation({ description: "상품 리스트를 제공" })
-    @ApiOkResponse({ type: [ProductDto] })
+    @ApiOkResponse({ type: PageDto<ProductDto> })
     @Get()
-    async getAllProducts(@Query() { categoryId }: getAllProductDto) {
-        const products = await this.productService.getAll(categoryId);
+    async getAllProducts(
+        @Query() pageOptionsDto: PageOptionsDto,
+        @Query() { categoryId }: getAllProductDto
+    ) {
+        const products = await this.productService.getAll(
+            pageOptionsDto,
+            categoryId
+        );
         return products;
     }
 }
