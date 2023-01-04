@@ -15,4 +15,9 @@ export class PageDto<T> {
         description: "페이지네이션에 관한 메타 데이터",
     })
     readonly meta: PageMetaDto;
+
+    constructor(data: T[], meta: PageMetaDto) {
+        this.data = data;
+        this.meta = meta;
+    }
 }

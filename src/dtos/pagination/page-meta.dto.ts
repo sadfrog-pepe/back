@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Pagination, PaginationTakeType } from "src/common/common.constant";
+import { Pagination } from "src/common/common.constant";
 import { PageMetaDtoParameters } from "./page-meta-parameters";
 
 export class PageMetaDto {
@@ -13,7 +13,7 @@ export class PageMetaDto {
         description: "한 페이지에 담기는 데이터의 최대 갯수",
         example: Pagination.DEFAULT_TAKE_TYPE,
     })
-    readonly take: PaginationTakeType;
+    readonly take: number;
 
     @ApiProperty({
         description: "주어진 조건으로 데이터베이스에서 찾아낸 데이터의 갯수",

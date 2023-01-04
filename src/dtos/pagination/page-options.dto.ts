@@ -1,11 +1,7 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsOptional, Max, Min } from "class-validator";
-import {
-    Order,
-    Pagination,
-    PaginationTakeType,
-} from "src/common/common.constant";
+import { Order, Pagination } from "src/common/common.constant";
 import { IsOptionalNumber } from "src/decorators/is-optional-number.decorator";
 
 export class PageOptionsDto {
@@ -16,7 +12,7 @@ export class PageOptionsDto {
     })
     @IsEnum(Order)
     @IsOptional()
-    readonly order?: Order = Order.ASC;
+    readonly order: Order = Order.ASC;
 
     @ApiPropertyOptional({
         type: Number,
@@ -27,16 +23,15 @@ export class PageOptionsDto {
     readonly page?: number = Pagination.MINIMUM_PAGE_NUMBER;
 
     @ApiPropertyOptional({
-        type: PaginationTakeType,
+        type: Number,
         default: Pagination.DEFAULT_TAKE_TYPE,
-        examples: PaginationTakeType,
+        examples: [3, 5, 10, 12, 16],
         minimum: Pagination.MINIMUM_TAKE_TYPE,
         maximum: Pagination.MAXIMUM_TAKE_TYPE,
     })
-    //@Type(() => PaginationTakeType) // 에러나는 부분 is missing the following properties from type 'Function': apply, call, bind, prototype, and 5 more.
-    @IsEnum(PaginationTakeType)
-    @IsOptional()
-    readonly take?: PaginationTakeType = Pagination.DEFAULT_TAKE_TYPE;
+    @Type(() => Number)
+    @IsOptionalNumber()
+    readonly take?: number = Pagination.DEFAULT_TAKE_TYPE;
 
     get skip(): number {
         return (this.page - 1) * this.take;
