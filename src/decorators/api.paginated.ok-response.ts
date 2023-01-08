@@ -1,3 +1,8 @@
+/**
+ * Refer to allonso's blog (https://aalonso.dev/)
+ * post name: "How to generate Generics DTOs with nestjs/swagger"
+ */
+
 import { applyDecorators, Type } from "@nestjs/common";
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from "@nestjs/swagger";
 import { PageDto } from "src/dtos/pagination/page.dto";
