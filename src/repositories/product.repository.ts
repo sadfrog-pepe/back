@@ -26,10 +26,35 @@ export class ProductRepository extends Repository<ProductEntity> {
             }, "image")
             .addSelect((qb) => {
                 return qb
-                    .select("pop.salePrice")
-                    .innerJoin(ProductOptionPriceEntity, "pop")
-                    .andWhere("po.id = pop.productOptionId")
+                    .select("salePrice")
                     .from(ProductOptionEntity, "po")
+                    .innerJoin(
+                        (qb) => {
+                            return qb
+                                .select([
+                                    "pop.productOptionId AS 'productOptionId'",
+                                    "pop.salePrice AS 'salePrice'",
+                                ])
+                                .from(ProductOptionPriceEntity, "pop")
+                                .where((qb) => {
+                                    const subQuery = qb
+                                        .subQuery()
+                                        .select([
+                                            "pop_temp.productOptionId AS productOptionId",
+                                            "max(pop_temp.createdAt) AS createdAt",
+                                        ])
+                                        .from(
+                                            ProductOptionPriceEntity,
+                                            "pop_temp"
+                                        )
+                                        .groupBy("pop_temp.productOptionId")
+                                        .getQuery();
+                                    return `(pop.productOptionId, pop.createdAt) IN ${subQuery}`;
+                                });
+                        },
+                        "pop",
+                        "po.id = productOptionId"
+                    )
                     .where("po.productId = p.id")
                     .orderBy("pop.salePrice", Order.ASC)
                     .limit(1);
