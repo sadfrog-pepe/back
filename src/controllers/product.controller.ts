@@ -5,10 +5,10 @@ import {
     ApiProperty,
     ApiTags,
 } from "@nestjs/swagger";
+import { ApiPaginatedOkResponse } from "src/decorators/api.paginated.ok-response";
 import { getAllProductDto } from "src/dtos/get-all-product.dto";
 import { PageOptionsDto } from "src/dtos/pagination/page-options.dto";
-import { PageDto } from "src/dtos/pagination/page.dto";
-import { ProductDto } from "src/dtos/responses/product.dto";
+import { ProductResponseDto } from "src/dtos/responses/product.response.dto";
 import { ProductService } from "src/services/product.service";
 
 @ApiTags("상품 API")
@@ -45,7 +45,7 @@ export class ProductController {
     }
 
     @ApiOperation({ description: "상품 리스트를 제공" })
-    @ApiOkResponse({ type: PageDto<ProductDto> })
+    @ApiPaginatedOkResponse(ProductResponseDto)
     @Get()
     async getAllProducts(
         @Query() pageOptionsDto: PageOptionsDto,
