@@ -9,6 +9,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const port = NEST_PORT;
 
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
     app.use(cookieParser());
     app.enableCors();
     setUpSwagger(app);

@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SocketAddress } from "net";
+import { PageMetaDto } from "src/dtos/pagination/page-meta.dto";
+import { PageOptionsDto } from "src/dtos/pagination/page-options.dto";
+import { PageDto } from "src/dtos/pagination/page.dto";
 import { ProductRepository } from "src/repositories/product.repository";
 
 @Injectable()
@@ -10,7 +13,7 @@ export class ProductService {
         private readonly productRepository: ProductRepository
     ) {}
 
-    async getAll(categoryId?: number) {
+    async getAll(pageOptionsDto: PageOptionsDto, categoryId?: number) {
         // await this.productRepository.find({
         // 	select: {
         // 		id: true,
@@ -36,7 +39,13 @@ export class ProductService {
         // 	},
         // });
 
-        return await this.productRepository.getAll(categoryId);
+        const { products, itemCount } = await this.productRepository.getAll(
+            pageOptionsDto,
+            categoryId
+        );
+
+        const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+        return new PageDto(products, pageMetaDto);
 
         // return products.map((product) => {
 
