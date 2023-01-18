@@ -30,6 +30,8 @@ export class ProductOptionEntity extends CommonEntity {
     @JoinColumn({ name: "productId", referencedColumnName: "id" })
     product: ProductEntity;
 
-    @OneToMany(() => ProductOptionPriceEntity, (pop) => pop.salePrice)
+    @OneToMany(() => ProductOptionPriceEntity, (pop) => pop.salePrice, {
+        cascade: true,
+    })
     prices: ProductOptionPriceEntity[];
 }
