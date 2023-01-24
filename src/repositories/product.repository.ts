@@ -71,4 +71,15 @@ export class ProductRepository extends Repository<ProductEntity> {
         const itemCount = await query.getCount();
         return { products, itemCount };
     }
+
+    //name, categoryId, sellerId, brandId, options, images
+    // image: productId, imageType, url
+    // option: productId, name, price
+    // optionPrice: salePrice, productOptionId
+    // sellerId, brandId, categoryId 모두 1로 고정. imageType도 임의로.....설정하자.
+    // 이미지는 그냥 인터넷에서 아무거나 다운받아서 넣어보자. 아니면 링크 그대로... 넣자. 제대로 할거면 다운받아서 s3에 넣고 하자.
+    async insertCrawlingData(data): Promise<void> {
+        const name = data?.name;
+        const images = data?.images;
+    }
 }

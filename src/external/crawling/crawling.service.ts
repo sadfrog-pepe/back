@@ -1,12 +1,18 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Browser, launch, Page } from "puppeteer";
+import { ProductRegisterDto } from "src/dtos/product/product-register.dto";
 import { ProductImageEntity } from "src/entities/product-image.entity";
 import { ProductEntity } from "src/entities/product.entity";
+import { ProductRepository } from "src/repositories/product.repository";
 import { checkIsNaverProductDetailPage } from "./crawing.function";
 
 @Injectable()
 export class CrawlingService {
-    constructor() {}
+    constructor(
+        @InjectRepository(ProductRepository)
+        private readonly productRepository: ProductRepository
+    ) {}
     async getPage(url: string) {
         const browser = await this.getBrowser();
         if (!browser) {
@@ -136,5 +142,17 @@ export class CrawlingService {
     isAccurateUrl(url: string) {
         const replacedUrl = checkIsNaverProductDetailPage(url);
         return replacedUrl;
+    }
+
+    //name, categoryId, sellerId, brandId, options, images
+    // image: productId, imageType, url
+    // option: productId, name, price
+    // optionPrice: salePrice, productOptionId
+    // sellerId, brandId, categoryId 모두 1로 고정. imageType도 임의로.....설정하자.
+    // 이미지는 그냥 인터넷에서 아무거나 다운받아서 넣어보자. 아니면 링크 그대로... 넣자. 제대로 할거면 다운받아서 s3에 넣고 하자.
+    async saveCrawlingData(
+        data: ProductRegisterDto
+    ): Promise<ProductRegisterDto> {
+        return await this.productRepository.save(data);
     }
 }

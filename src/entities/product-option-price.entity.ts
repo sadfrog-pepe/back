@@ -33,5 +33,5 @@ export class ProductOptionPriceEntity extends CreatedDateOnlyCommonEntity {
         (productOption) => productOption.prices
     )
     @JoinColumn({ name: "productOptionId", referencedColumnName: "id" })
-    product: ProductOptionEntity;
+    productOption: ProductOptionEntity;
 }
