@@ -1,12 +1,18 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Browser, launch, Page } from "puppeteer";
+import { ProductRegisterDto } from "src/dtos/product/product-register.dto";
 import { ProductImageEntity } from "src/entities/product-image.entity";
 import { ProductEntity } from "src/entities/product.entity";
+import { ProductRepository } from "src/repositories/product.repository";
 import { checkIsNaverProductDetailPage } from "./crawing.function";
 
 @Injectable()
 export class CrawlingService {
-    constructor() {}
+    constructor(
+        @InjectRepository(ProductRepository)
+        private readonly productRepository: ProductRepository
+    ) {}
     async getPage(url: string) {
         const browser = await this.getBrowser();
         if (!browser) {
@@ -136,5 +142,11 @@ export class CrawlingService {
     isAccurateUrl(url: string) {
         const replacedUrl = checkIsNaverProductDetailPage(url);
         return replacedUrl;
+    }
+
+    async saveCrawlingData(
+        data: ProductRegisterDto
+    ): Promise<ProductRegisterDto> {
+        return await this.productRepository.save(data);
     }
 }
