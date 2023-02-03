@@ -59,9 +59,13 @@ export class ProductEntity extends CommonEntity {
     @JoinColumn({ name: "brandId", referencedColumnName: "id" })
     brand: BrandEntity;
 
-    @OneToMany(() => ProductOptionEntity, (po) => po.product)
+    @OneToMany(() => ProductOptionEntity, (po) => po.product, {
+        cascade: true,
+    })
     options: ProductOptionEntity[];
 
-    @OneToMany(() => ProductImageEntity, (pi) => pi.product)
+    @OneToMany(() => ProductImageEntity, (pi) => pi.product, {
+        cascade: true,
+    })
     images: ProductImageEntity[];
 }
