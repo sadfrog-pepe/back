@@ -17,6 +17,7 @@ import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/auth-guards/jwt-auth.guard";
 import { HttpExceptionFilter } from "./filters/http-exception.filter";
 import { ProductModule } from "./modules/product.module";
+import { CrawlingModule } from "./external/crawling/crawling.module";
 
 @Module({
     imports: [
@@ -30,27 +31,31 @@ import { ProductModule } from "./modules/product.module";
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => {
-                return {
-                    retryAttempts: configService.get("env") === "prod" ? 10 : 1,
-                    type: "mysql",
-                    host: configService.get("DB_HOST") || "localhost",
-                    port: Number(configService.get("DB_PORT")) || 3306,
-                    database: configService.get("DB_NAME") || "vintage",
-                    username: configService.get("DB_USER") || "root",
-                    password: configService.get("DB_PASSWORD") || "",
+                const options = {
+                    retryAttempts:
+                        configService.get("NODE_ENV") === "prod" ? 10 : 1,
+                    type: "mysql" as const,
+                    host: configService.get("DB_HOST"),
+                    port: Number(configService.get("DB_PORT")),
+                    database: configService.get("DB_NAME"),
+                    username: configService.get("DB_USER"),
+                    password: configService.get("DB_PASSWORD"),
                     entities: [
                         path.join(__dirname, "entities/**/*.entity.ts"),
                         path.join(__dirname, "entities/**/*.entity.js"),
                     ],
-                    synchronize: true,
+                    synchronize: false,
                     logging: false,
                     timezone: "local",
                 };
+
+                return options;
             },
         }),
         UsersModule,
         AuthModule,
         ProductModule,
+        CrawlingModule,
     ],
     controllers: [AppController],
     providers: [
