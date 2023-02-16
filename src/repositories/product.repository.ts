@@ -1,5 +1,6 @@
 import { Order } from "src/common/common.constant";
 import { PageOptionsDto } from "src/dtos/pagination/page-options.dto";
+import { CategoryEntity } from "src/entities/category.entity";
 import {
     ImageType,
     ProductImageEntity,
@@ -12,6 +13,50 @@ import { Repository } from "typeorm";
 
 @CustomRepository(ProductEntity)
 export class ProductRepository extends Repository<ProductEntity> {
+    async getOne(productId: number) {
+        let query = this.createQueryBuilder("p")
+            .select([
+                'p.id AS "id"',
+                'p.name AS "name"',
+                'c.name AS "categoryName"',
+                'po.name AS "optionName"',
+                'pop.salePrice AS "salePrice"',
+                'pi.url AS "imageUrl"',
+                'pi.type AS "imageType"',
+            ])
+            .whereInIds(productId)
+            .innerJoin(CategoryEntity, "c", "c.id = p.categoryId")
+            .innerJoin(ProductImageEntity, "pi", "pi.productId = p.id")
+            .innerJoin(ProductOptionEntity, "po", "po.productId = p.id")
+            .innerJoin(
+                (qb) => {
+                    return qb
+                        .select([
+                            'pop_inner.productOptionId AS "productOptionId"',
+                            "pop_inner.salePrice AS salePrice",
+                        ])
+                        .from(ProductOptionPriceEntity, "pop_inner")
+                        .where((qb) => {
+                            const subQuery = qb
+                                .subQuery()
+                                .select([
+                                    'pop_temp.productOptionId AS "productOptionId"',
+                                    'max(pop_temp.createdAt) AS "createdAt"',
+                                ])
+                                .from(ProductOptionPriceEntity, "pop_temp")
+                                .groupBy("pop_temp.productOptionId")
+                                .getQuery();
+                            return `(pop_inner.productOptionId, pop_inner.createdAt) IN ${subQuery}`;
+                        });
+                },
+                "pop",
+                "pop.productOptionId = po.id"
+            );
+
+        console.log(query.getQuery());
+        return await query.getRawMany();
+    }
+
     async getAll(pageOptionsDto: PageOptionsDto, categoryId?: number) {
         let query = this.createQueryBuilder("p")
             .select(["p.id AS 'id'", "p.name AS 'name'"])

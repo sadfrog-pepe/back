@@ -13,6 +13,12 @@ export class ProductService {
         private readonly productRepository: ProductRepository
     ) {}
 
+    async getOne(productId: number) {
+        let temp = await this.productRepository.getOne(productId);
+        console.log(temp);
+        return temp;
+    }
+
     async getAll(pageOptionsDto: PageOptionsDto, categoryId?: number) {
         // await this.productRepository.find({
         // 	select: {
