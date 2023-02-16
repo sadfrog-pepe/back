@@ -22,7 +22,7 @@ export class ProductRepository extends Repository<ProductEntity> {
                 'po.name AS "optionName"',
                 'pop.salePrice AS "salePrice"',
                 'pi.url AS "imageUrl"',
-                'pi.type AS "imageType"',
+                'pi.imageType AS "imageType"',
             ])
             .whereInIds(productId)
             .innerJoin(CategoryEntity, "c", "c.id = p.categoryId")
