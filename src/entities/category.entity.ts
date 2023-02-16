@@ -19,6 +19,7 @@ export class CategoryEntity extends CommonEntity {
         description:
             "상위 카테고리 id. null값을 갖는 경우에는 상위 카테고리를 의미하고, 값을 가지면 하위 카테고리를 의미한다. 현재 카테고리는 상/하위 2단계로만 구분하고, 하위 카테고리를 이 프로퍼티에 지정하지 않는다.",
         examples: [3, null],
+        required: false,
     })
     @IsOptionalNumber()
     @Column({ nullable: true })
