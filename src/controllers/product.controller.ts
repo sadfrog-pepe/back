@@ -8,6 +8,7 @@ import {
 import { ApiPaginatedOkResponse } from "src/decorators/api.paginated.ok-response";
 import { getAllProductDto } from "src/dtos/get-all-product.dto";
 import { PageOptionsDto } from "src/dtos/pagination/page-options.dto";
+import { GetOneProductDetailResponseDto } from "src/dtos/responses/get-one-product-detail.response.dto";
 import { ProductResponseDto } from "src/dtos/responses/product.response.dto";
 import { ProductService } from "src/services/product.service";
 
@@ -16,33 +17,17 @@ import { ProductService } from "src/services/product.service";
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
+    @ApiOperation({
+        description: "상품 1개 조회",
+    })
+    @ApiOkResponse({
+        description: "상품 1개의 정보, 이미지, 옵션 및 그에 따른 가격 제공",
+        type: GetOneProductDetailResponseDto,
+    })
     @Get(":id")
     async getOneProduct(@Param("id", ParseIntPipe) productId: number) {
         console.log(productId);
         return this.productService.getOne(productId);
-        // return {
-        //     id: 1,
-        //     name: "상품이름",
-
-        //     images: [
-        //         {
-        //             imageUrl: "http:www.naver.com/adsaasdas",
-        //             imageType: "Thumbnail",
-        //         },
-        //     ],
-        //     options: [
-        //         {
-        //             id: 1,
-        //             name: "White 신상! 지금만 할인",
-        //             salePrice: 10000,
-        //         },
-        //         {
-        //             id: 2,
-        //             name: "Black",
-        //             salePrice: 12000,
-        //         },
-        //     ],
-        // };
     }
 
     @ApiOperation({ description: "상품 리스트를 제공" })
