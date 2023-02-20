@@ -12,6 +12,6 @@ export class ProductOptionWithPriceDto extends PickType(ProductOptionEntity, [
         super();
         this.id = productOption.id;
         this.name = productOption.name;
-        this.salePrice = productOption.prices.at(-1).salePrice;
+        this.salePrice = productOption.prices.pop().salePrice;
     }
 }
