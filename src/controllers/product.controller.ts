@@ -35,7 +35,7 @@ export class ProductController {
     @Get()
     async getAllProducts(
         @Query() pageOptionsDto: PageOptionsDto,
-        @Query() { categoryId }: getAllProductDto
+        @Query("category") categoryId: number
     ) {
         const products = await this.productService.getAll(
             pageOptionsDto,

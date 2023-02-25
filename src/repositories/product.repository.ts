@@ -110,7 +110,9 @@ export class ProductRepository extends Repository<ProductEntity> {
             .take(pageOptionsDto.take);
 
         if (categoryId) {
-            query = query.where("p.categoryId = :categoryId", { categoryId });
+            query = query.andWhere("p.categoryId = :categoryId", {
+                categoryId,
+            });
         }
 
         const products = await query.getRawMany();
