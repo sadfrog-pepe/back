@@ -36,9 +36,12 @@ export class CrawlingController {
                                 : "standardOptions"
                             : "simpleOptions";
 
+                    console.log("product : ", product);
+                    console.log("optionType : ", optionType);
+
                     if (
                         optionType !== "combinationOptions" &&
-                        product.options.combinationOptions.length === 0
+                        product.options.combinationOptions.length !== 0
                     ) {
                         throw new BadRequestException(
                             "크롤링 가능 대상이 아닙니다."
@@ -50,19 +53,32 @@ export class CrawlingController {
                         categoryId: 1,
                         sellerId: 1,
                         brandId: 1,
-                        options: product.options[optionType][0].options.map(
-                            (el) => {
-                                return {
-                                    name: el.optionName,
-                                    prices: [
-                                        {
-                                            salePrice:
-                                                product.options.defaultPrice,
-                                        },
-                                    ],
-                                };
-                            }
-                        ),
+                        options: product.options[optionType][0]
+                            ? product.options[optionType][0].options.map(
+                                  (el) => {
+                                      return {
+                                          name: el.optionName,
+                                          prices: [
+                                              {
+                                                  salePrice:
+                                                      product.options
+                                                          .defaultPrice,
+                                              },
+                                          ],
+                                      };
+                                  }
+                              )
+                            : [
+                                  {
+                                      name: "default",
+                                      price: [
+                                          {
+                                              salePrice:
+                                                  product.options.defaultPrice,
+                                          },
+                                      ],
+                                  },
+                              ],
 
                         images: product.images,
                     };
