@@ -14,19 +14,18 @@ import { AuthService } from "src/services/auth.service";
 import { Request, Response } from "express";
 import { LocalAuthGuard } from "src/auth/auth-guards/local-auth.guard";
 import {
-    ApiAcceptedResponse,
     ApiBody,
-    ApiCookieAuth,
     ApiCreatedResponse,
     ApiOkResponse,
     ApiOperation,
-    ApiProperty,
     ApiTags,
     ApiUnauthorizedResponse,
-    PickType,
 } from "@nestjs/swagger";
 import { UserEntity } from "src/entities/user.entity";
 import { User } from "src/decorators/user.decorator";
+import { NORMAL_MESSAGE } from "src/common/normal-message";
+import { LoginSuccessDto } from "src/dtos/responses/login-success.dts";
+import { NormalOperationDto } from "src/dtos/responses/normal-operation.dto";
 
 @Controller("api/auths")
 @ApiTags("유저 회원가입 및 인증 API")
@@ -36,7 +35,7 @@ export class AuthController {
     @ApiOperation({
         summary: "로그인(local 인증) api v1",
         description:
-            "유저의 이메일과 비밀번호가 데이터베이스와 동일하면 인증에 성공하며, token를 response body에 기술한다.",
+            "유저의 이메일과 비밀번호가 데이터베이스와 동일하면 인증에 성공하며, accessToken를 response body에 기술한다.",
     })
     @ApiBody({
         type: LoginUserDto,
@@ -44,7 +43,7 @@ export class AuthController {
     @ApiOkResponse({
         description:
             "access token을 Response Body에 제공한다. {'accessToken': 'asdfas'}",
-        type: String,
+        type: LoginSuccessDto,
     })
     @ApiUnauthorizedResponse({
         description:
@@ -53,22 +52,24 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post("login")
     async login(@User() user: UserEntity) {
-        const accessToken = await this.authService.tokenize(user);
-        return { accessToken };
+        return new LoginSuccessDto(
+            await this.authService.tokenize(user),
+            NORMAL_MESSAGE.SUCCESS_LOGIN
+        );
     }
 
     @ApiOperation({
         summary: "로그인(local 인증) api v2",
         description:
-            "유저의 이메일과 비밀번호가 데이터베이스와 동일하면 인증에 성공하며, token을 쿠키에 저장한다.",
+            "유저의 이메일과 비밀번호가 데이터베이스와 동일하면 인증에 성공하며, accessToken를 Response의 header에 기술한다. (Bearer 방식)",
     })
     @ApiBody({
         type: LoginUserDto,
     })
     @ApiOkResponse({
         description:
-            "access token을 Response Cookie에 제공하고, {'message': 'success'}를 body에 반환한다.",
-        type: String,
+            "access token을 Response Cookie에 제공하고, {'message': '로그인 성공'}를 body에 반환한다.",
+        type: NormalOperationDto,
     })
     @ApiUnauthorizedResponse({
         description:
@@ -78,12 +79,9 @@ export class AuthController {
     @Post("login-cookie")
     async loginNew(@User() user: UserEntity, @Res() res: Response) {
         const accessToken = await this.authService.tokenize(user);
-        res.cookie("accessToken", accessToken, {
-            maxAge: 600 * 1000,
-            httpOnly: true,
-        }).send({
-            message: "success",
-        });
+        res.setHeader("Authorization", `Bearer ${accessToken}`);
+        res.write(new NormalOperationDto(NORMAL_MESSAGE.SUCCESS_LOGIN));
+        res.send();
     }
 
     @ApiOperation({
@@ -91,7 +89,6 @@ export class AuthController {
         description:
             "유저 이메일이 이미 등록된 경우가 아니면, 새로운 유저로 등록한다.",
     })
-    @ApiProperty({})
     @ApiCreatedResponse({
         description: "비밀번호를 제외한 유저정보를 제공한다",
         type: UserEntity,
@@ -100,6 +97,6 @@ export class AuthController {
     async register(
         @Body() user: RegisterUserDto
     ): Promise<Partial<UserEntity>> {
-        return this.authService.register(user);
+        return await this.authService.register(user);
     }
 }

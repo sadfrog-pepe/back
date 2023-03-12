@@ -6,6 +6,7 @@ export function setUpSwagger(app: INestApplication): void {
         .setTitle("i-Dongmyo API docs")
         .setDescription("설명은 생략합니다~")
         .setVersion("0.0.1")
+        .addBearerAuth()
         .build();
 
     const document = SwaggerModule.createDocument(app, options);

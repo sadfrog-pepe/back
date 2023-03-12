@@ -27,8 +27,21 @@ export class AuthService {
     ) {}
 
     async tokenize(user: UserEntity) {
-        const token = await this.jwtService.sign(user);
+        const payload: AccessTokenPayload = {
+            id: user.id,
+            email: user.email,
+        };
+        const token = await this.jwtService.sign(payload);
         return token;
+    }
+
+    async validateUserById(id: number) {
+        const user = await this.usersService.readUserById(id);
+
+        if (!user) {
+            throw new BadRequestException(ERROR_MESSAGE.FAIL_TO_FIND_ID);
+        }
+        return user;
     }
 
     async vaildateUser(email: string, plainTextPassword: string): Promise<any> {
