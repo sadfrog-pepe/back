@@ -1,12 +1,11 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import {
+    ApiBearerAuth,
     ApiOkResponse,
     ApiOperation,
     ApiTags,
     ApiUnauthorizedResponse,
     OmitType,
-    PartialType,
-    PickType,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/auth-guards/jwt-auth.guard";
 import { User } from "src/decorators/user.decorator";
@@ -23,6 +22,7 @@ export class UserController {
         description:
             "유저의 이메일과 비밀번호가 데이터베이스와 동일하면 인증에 성공하며, token를 response body에 기술한다.",
     })
+    @ApiBearerAuth()
     @ApiOkResponse({
         description:
             "비밀번호를 제외한 유저 정보를 반환한다. createdAt-UpdatedAt 등도 있어야 됨! swagger 쓰는 법을 아직 잘 몰라서 예시에는 조-금 부족하게 뜸!",
@@ -35,6 +35,7 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get("profile")
     async getProfile(@User() user: UserEntity) {
-        return user;
+        const { password, ...returnUser } = user;
+        return returnUser;
     }
 }
