@@ -8,6 +8,7 @@ import { CommonEntity } from "./common/common.entity";
 import { ProductImageEntity } from "./product-image.entity";
 import { ProductOptionEntity } from "./product-option.entity";
 import { SellerEntity } from "./seller.entity";
+import { ProductLikeEntity } from "./product-like.entity";
 
 @Entity()
 export class ProductEntity extends CommonEntity {
@@ -68,4 +69,7 @@ export class ProductEntity extends CommonEntity {
         cascade: true,
     })
     images: ProductImageEntity[];
+
+    @OneToMany(() => ProductLikeEntity, (productLike) => productLike.productId)
+    likes: ProductLikeEntity[];
 }

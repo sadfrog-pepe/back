@@ -7,6 +7,7 @@ import { Entity, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import { CommonEntity } from "./common/common.entity";
 import { UserPlatformBridgeEntity } from "./oauth.entity";
 import { PlatformEntity } from "./platform.entity";
+import { ProductLikeEntity } from "./product-like.entity";
 
 @Entity()
 export class UserEntity extends CommonEntity {
@@ -36,7 +37,7 @@ export class UserEntity extends CommonEntity {
     gender: string | null;
 
     @IsOptionalNumber()
-    @Column({ type: "float", nullable: true })
+    @Column({ type: "decimal", precision: 4, scale: 1, nullable: true })
     @ApiProperty({
         example: "171.4",
         description: "유저의 신장(키), 소수점 1자리까지만 취급한다.",
@@ -44,7 +45,7 @@ export class UserEntity extends CommonEntity {
     height: number | null;
 
     @IsOptionalNumber()
-    @Column({ type: "float", nullable: true })
+    @Column({ type: "decimal", precision: 4, scale: 1, nullable: true })
     @ApiProperty({
         example: "71.4",
         description: "유저의 체중(몸무게), 소수점 1자리까지만 취급한다.",
@@ -83,4 +84,7 @@ export class UserEntity extends CommonEntity {
         inverseJoinColumn: { name: "platformId", referencedColumnName: "id" },
     })
     platforms: PlatformEntity[];
+
+    @OneToMany(() => ProductLikeEntity, (productLike) => productLike.userId)
+    productLikes: ProductLikeEntity[];
 }
